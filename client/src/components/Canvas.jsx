@@ -36,10 +36,12 @@ const Canvas = () => {
 
 	const stopDrawing = (e) => {
 		// Draw a single point
+		const c = getFinalCoords(e)
+
 		if (isDrawing) {
 			drawLine(
-				e.clientX, e.clientY,
-				e.clientX, e.clientY,
+				c.x, c.y,
+				c.x, c.y,
 				true
 			)
 		}
@@ -50,16 +52,15 @@ const Canvas = () => {
 	const mouseMove = (e) => {
 		if (!isDrawing) return
 
+		const newCoords = getFinalCoords(e)
+
 		drawLine(
 			coords.x, coords.y,
-			e.clientX, e.clientY,
+			newCoords.x, newCoords.y,
 			true
 		)
 
-		setCoords({
-			x: e.clientX,
-			y: e.clientY
-		})
+		setCoords(newCoords)
 	}
 
 	const drawLine = (x0, y0, x1, y1, emit) => {
