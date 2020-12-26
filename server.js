@@ -9,8 +9,6 @@ io.on('connection', (socket) => {
 			username
 		})
 
-		console.log('join');
-
 		io.emit('player', players)
 	})
 
@@ -24,5 +22,9 @@ io.on('connection', (socket) => {
 
 	socket.on('draw', (data) => {
 		socket.broadcast.emit('draw', data)
+	})
+
+	socket.on('clear', () => {
+		io.emit('clear')
 	})
 })

@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from 'react'
 
 import { useSocket } from '../contexts/socketContext'
 
+import Button from 'react-bootstrap/Button'
+
 const Canvas = () => {
 	const canvasRef = useRef()
 	const socket = useSocket()
@@ -10,15 +12,7 @@ const Canvas = () => {
 	const [coords, setCoords] = useState({ x: 0, y: 0 })
 
 	useEffect(() => {
-		const canvas = canvasRef.current
-		const ctx = canvas.getContext('2d')
-
-		ctx.fillStyle = '#FFF'
-		ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-		ctx.strokeStyle = '#000'
-		ctx.lineCap = 'round'
-		ctx.lineWidth = 8
+		resetCanvas()
 	}, [])
 
 	useEffect(() => {
@@ -26,6 +20,10 @@ const Canvas = () => {
 		
 		socket.on('draw', ({ x0, y0, x1, y1 }) => {
 			drawLine(x0, y0, x1, y1, false)
+		})
+
+		socket.on('clear', () => {
+			resetCanvas()
 		})
 	}, [socket])
 
@@ -79,6 +77,22 @@ const Canvas = () => {
 		}
 	}
 
+	const clearCanvas = () => {
+		socket.emit('clear')
+	}
+
+	const resetCanvas = () => {
+		const canvas = canvasRef.current
+		const ctx = canvas.getContext('2d')
+
+		ctx.fillStyle = '#FFF'
+		ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+		ctx.strokeStyle = '#000'
+		ctx.lineCap = 'round'
+		ctx.lineWidth = 8
+	}
+
 	const getFinalCoords = (e) => {
 		const canvas = canvasRef.current
 
@@ -89,13 +103,22 @@ const Canvas = () => {
 	}
 
 	return (
-		<canvas
-			ref={canvasRef}
-			className='rounded'
-			width={600} height={450}
-			onMouseDown={startDrawing} onMouseMove={mouseMove}
-			onMouseUp={stopDrawing} onMouseOut={stopDrawing}
-		/>
+		<>
+			<canvas
+				ref={canvasRef}
+				className='rounded'
+				width={600} height={450}
+				onMouseDown={startDrawing} onMouseMove={mouseMove}
+				onMouseUp={stopDrawing} onMouseOut={stopDrawing}
+			/>
+
+			<Button
+				variant='danger'
+				onClick={clearCanvas}	
+			>
+				Clear
+			</Button>
+		</>
 	)
 }
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 const UsernamePrompt = ({ onSubmit }) => {
-	const [username, setUsername] = useState('')
+	const [username, setUsername] = useState('test')
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
