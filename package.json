@@ -11,5 +11,8 @@
     "devClient": "yarn --cwd client start",
     "devServer": "nodemon server.js",
     "dev": "concurrently \"yarn devServer\" \"yarn devClient\""
+  },
+  "dependencies": {
+    "socket.io": "^3.0.4"
   }
 }
