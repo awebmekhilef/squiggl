@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
+import InputGroup from 'react-bootstrap/InputGroup'
+
 const UsernamePrompt = ({ onSubmit }) => {
 	const [username, setUsername] = useState('test')
 
@@ -13,18 +17,18 @@ const UsernamePrompt = ({ onSubmit }) => {
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
-			<div className='input-group mt-5'>
-				<input
-					className='form-control'
+		<Form onSubmit={handleSubmit}>
+			<InputGroup className='mt-5'>
+				<Form.Control
 					value={username} onChange={(e) => setUsername(e.target.value.trim())}
 					placeholder='Enter your name' autoFocus autoComplete='off' spellCheck='false'
 				/>
-				<div className='input-group-append'>
-					<button className='btn btn-secondary' type='submit'>Join</button>
-				</div>
-			</div>
-		</form>
+
+				<InputGroup.Append>
+					<Button variant='secondary' type='submit'>Join</Button>
+				</InputGroup.Append>
+			</InputGroup>
+		</Form>
 	)
 }
 

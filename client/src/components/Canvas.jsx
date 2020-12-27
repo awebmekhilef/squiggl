@@ -97,8 +97,8 @@ const Canvas = () => {
 		const canvas = canvasRef.current
 
 		return {
-			x: e.clientX - canvas.offsetLeft,
-			y: e.clientY - canvas.offsetTop,
+			x: e.clientX - canvas.parentNode.offsetLeft - canvas.offsetLeft,
+			y: e.clientY - canvas.parentNode.offsetTop - canvas.offsetTop
 		}
 	}
 

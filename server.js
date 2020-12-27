@@ -27,4 +27,15 @@ io.on('connection', (socket) => {
 	socket.on('clear', () => {
 		io.emit('clear')
 	})
+
+	socket.on('chat', (msg) => {
+		const from = players.find((p) => {
+			return p.id === socket.id
+		}).username
+
+		socket.broadcast.emit('chat', {
+			from,
+			msg
+		})
+	})
 })

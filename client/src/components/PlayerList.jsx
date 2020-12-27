@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useSocket } from '../contexts/socketContext'
 
 import ListGroup from 'react-bootstrap/ListGroup'
-import ListGroupItem from 'react-bootstrap/ListGroupItem'
 
 const PlayerList = () => {
 	const socket = useSocket()
@@ -22,13 +21,13 @@ const PlayerList = () => {
 		<ListGroup>
 			{
 				players.map((p) => (
-					<ListGroupItem key={p.id}>
+					<ListGroup.Item key={p.id}>
 						{
 							socket.id === p.id ?
 								<b>{p.username} (You)</b>:
 								`${p.username}`
 						}
-					</ListGroupItem>
+					</ListGroup.Item>
 				))
 			}
 		</ListGroup>
