@@ -46,11 +46,12 @@ const ChatBox = () => {
 	}
 
 	return (
-		<div style={{ height: 450 }} className='d-flex flex-column justify-content-between'>
-			<ListGroup style={{ height: 400, overflow: 'auto' }}>
+		// TODO : Fix scrolling problem
+		<div className='d-flex flex-column justify-content-between chatContainer'>
+			<ListGroup className='chatList'>
 				{
 					chats.map((c, i) => (
-						<ListGroup.Item key={i}>
+						<ListGroup.Item key={i} className='chatItem'>
 							{c.from}: {c.msg}
 						</ListGroup.Item>
 					))
