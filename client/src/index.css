@@ -2,13 +2,17 @@ canvas {
 	cursor: url('./drawCursor.svg') 4 4, crosshair;
 }
 
-.chatList {
-	max-height: 400px;
-	overflow-y: auto;
+.gameContainer {
+	min-width: 1000px;
 }
 
 .chatContainer {
 	height: 450px;
+}
+
+.chatList {
+	max-height: 390px;
+	overflow-y: auto;
 }
 
 .chatItem {

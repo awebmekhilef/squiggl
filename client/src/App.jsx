@@ -26,7 +26,7 @@ const App = () => {
 			{
 				hasJoined ?
 					(
-						<Row className = 'mt-5'>
+						<Row className = 'gameContainer mt-5'>
 							<Col>
 								<PlayerList />
 							</Col>

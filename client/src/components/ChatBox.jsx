@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 import { useSocket } from '../contexts/socketContext'
 
 import Form from 'react-bootstrap/Form'
 import ListGroup from 'react-bootstrap/ListGroup'
-import { io } from 'socket.io-client'
 
 const ChatBox = () => {
 	const socket = useSocket()
+	const bottomRef = useRef()
 
 	const [msg, setMsg] = useState('')
 	const [chats, setChats] = useState([])
@@ -16,6 +16,8 @@ const ChatBox = () => {
 		if (socket == null) return
 
 		socket.on('chat', handleRecieveChat)
+
+		scrollToBottom()
 
 		return () => {
 			socket.off('chat', handleRecieveChat)
@@ -39,10 +41,17 @@ const ChatBox = () => {
 				msg: trimMsg
 			}
 		])
-		
+
 		socket.emit('chat', trimMsg)
 
 		setMsg('')
+	}
+
+	const scrollToBottom = () => {
+		bottomRef.current.scrollIntoView({
+			behavior: "smooth",
+			block: "start",
+		});
 	}
 
 	return (
@@ -56,6 +65,7 @@ const ChatBox = () => {
 						</ListGroup.Item>
 					))
 				}
+				<div ref={bottomRef}></div>
 			</ListGroup>
 
 			<Form onSubmit={handleSendMsg}>
