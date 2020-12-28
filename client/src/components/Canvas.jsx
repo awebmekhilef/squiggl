@@ -17,7 +17,12 @@ const Canvas = () => {
 
 	useEffect(() => {
 		if (socket == null) return
-		
+
+		socket.on('join', (drawingCache) => {
+			console.log(drawingCache);
+			drawingCache.forEach((d) => drawLine(d.x0, d.y0, d.x1, d.y1, false))
+		})
+
 		socket.on('draw', ({ x0, y0, x1, y1 }) => {
 			drawLine(x0, y0, x1, y1, false)
 		})
@@ -114,7 +119,7 @@ const Canvas = () => {
 
 			<Button
 				variant='danger'
-				onClick={clearCanvas}	
+				onClick={clearCanvas}
 			>
 				Clear
 			</Button>
