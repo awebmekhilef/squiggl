@@ -1,5 +1,9 @@
-canvas {
+.canvasDraw {
 	cursor: url('./drawCursor.svg') 4 4, crosshair;
+}
+
+.canvasDisable {
+	cursor: not-allowed;
 }
 
 .gameContainer {
@@ -11,7 +15,6 @@ canvas {
 }
 
 .chatList {
-	max-height: 390px;
 	overflow-y: auto;
 }
 

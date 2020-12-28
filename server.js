@@ -2,6 +2,7 @@ const io = require('socket.io')(5000)
 
 let players = []
 let drawingCache = []
+let gameStarted = false
 
 io.on('connection', (socket) => {
 	socket.on('join', (username) => {
@@ -9,6 +10,11 @@ io.on('connection', (socket) => {
 			id: socket.id,
 			username
 		})
+
+		if (!gameStarted && players.length > 1) {
+			io.emit('startGame')
+			gameStarted = true
+		}
 
 		socket.emit('join', drawingCache)
 		io.emit('player', players)
@@ -18,6 +24,11 @@ io.on('connection', (socket) => {
 		players = players.filter((p) => {
 			return p.id !== socket.id
 		})
+
+		if (players.length < 2) {
+			io.emit('endGame')
+			gameStarted = false
+		}
 
 		io.emit('player', players)
 
@@ -36,12 +47,12 @@ io.on('connection', (socket) => {
 	})
 
 	socket.on('chat', (msg) => {
-		const from = players.find((p) => {
+		const player = players.find((p) => {
 			return p.id === socket.id
-		}).username
+		})
 
 		socket.broadcast.emit('chat', {
-			from,
+			from: player.username,
 			msg
 		})
 	})

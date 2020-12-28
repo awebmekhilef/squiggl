@@ -4,7 +4,7 @@ import { useSocket } from '../contexts/socketContext'
 
 import Button from 'react-bootstrap/Button'
 
-const Canvas = () => {
+const Canvas = ({ isDrawer }) => {
 	const canvasRef = useRef()
 	const socket = useSocket()
 
@@ -41,7 +41,7 @@ const Canvas = () => {
 		// Draw a single point
 		const c = getFinalCoords(e)
 
-		if (isDrawing) {
+		if (isDrawing && isDrawer) {
 			drawLine(
 				c.x, c.y,
 				c.x, c.y,
@@ -53,7 +53,7 @@ const Canvas = () => {
 	}
 
 	const mouseMove = (e) => {
-		if (!isDrawing) return
+		if (!isDrawing || !isDrawer) return
 
 		const newCoords = getFinalCoords(e)
 
@@ -83,7 +83,7 @@ const Canvas = () => {
 	}
 
 	const clearCanvas = () => {
-		socket.emit('clear')
+		isDrawer && socket.emit('clear')
 	}
 
 	const resetCanvas = () => {
@@ -111,7 +111,7 @@ const Canvas = () => {
 		<>
 			<canvas
 				ref={canvasRef}
-				className='rounded'
+				className={'rounded ' + (isDrawer ? 'canvasDraw' : 'canvasDisable')}
 				width={600} height={450}
 				onMouseDown={startDrawing} onMouseMove={mouseMove}
 				onMouseUp={stopDrawing} onMouseOut={stopDrawing}

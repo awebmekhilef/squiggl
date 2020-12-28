@@ -56,7 +56,7 @@ const ChatBox = () => {
 
 	return (
 		// TODO : Fix scrolling problem
-		<div className='d-flex flex-column justify-content-between chatContainer'>
+		<div className='d-flex flex-column justify-content-between bg-white rounded chatContainer'>
 			<ListGroup className='chatList'>
 				{
 					chats.map((c, i) => (
