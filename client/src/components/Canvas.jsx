@@ -4,7 +4,7 @@ import { useSocket } from '../contexts/socketContext'
 
 import Button from 'react-bootstrap/Button'
 
-const Canvas = ({ isDrawer }) => {
+const Canvas = ({ isDrawer, onNextTurn }) => {
 	const canvasRef = useRef()
 	const socket = useSocket()
 
@@ -19,7 +19,6 @@ const Canvas = ({ isDrawer }) => {
 		if (socket == null) return
 
 		socket.on('join', (drawingCache) => {
-			console.log(drawingCache);
 			drawingCache.forEach((d) => drawLine(d.x0, d.y0, d.x1, d.y1, false))
 		})
 
@@ -123,6 +122,16 @@ const Canvas = ({ isDrawer }) => {
 			>
 				Clear
 			</Button>
+
+			{/* For testing only */}
+			{
+				isDrawer && <Button
+					variant='primary'
+					onClick={onNextTurn}
+				>
+					Next Turn
+			</Button>
+			}
 		</>
 	)
 }

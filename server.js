@@ -3,6 +3,7 @@ const io = require('socket.io')(5000)
 let players = []
 let drawingCache = []
 let gameStarted = false
+let currentPlayerIndex = 0
 
 io.on('connection', (socket) => {
 	socket.on('join', (username) => {
@@ -12,7 +13,7 @@ io.on('connection', (socket) => {
 		})
 
 		if (!gameStarted && players.length > 1) {
-			io.emit('startGame')
+			io.emit('nextTurn', players[currentPlayerIndex].id)
 			gameStarted = true
 		}
 
@@ -34,6 +35,16 @@ io.on('connection', (socket) => {
 
 		if (players.length === 0)
 			drawingCache = []
+	})
+
+	// Drawer timer run out
+	socket.on('nextTurn', () => {
+		currentPlayerIndex++
+
+		if (currentPlayerIndex > players.length - 1)
+			currentPlayerIndex = 0
+
+		io.emit('nextTurn', players[currentPlayerIndex].id)
 	})
 
 	socket.on('draw', (data) => {
