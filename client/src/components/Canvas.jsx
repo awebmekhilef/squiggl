@@ -4,7 +4,7 @@ import { useSocket } from '../contexts/socketContext'
 
 import Button from 'react-bootstrap/Button'
 
-const Canvas = ({ isDrawer, onNextTurn }) => {
+const Canvas = ({ isDrawer }) => {
 	const canvasRef = useRef()
 	const socket = useSocket()
 
@@ -101,8 +101,8 @@ const Canvas = ({ isDrawer, onNextTurn }) => {
 		const canvas = canvasRef.current
 
 		return {
-			x: e.clientX - canvas.parentNode.offsetLeft - canvas.offsetLeft,
-			y: e.clientY - canvas.parentNode.offsetTop - canvas.offsetTop
+			x: e.clientX - canvas.getBoundingClientRect().left,
+			y: e.clientY - canvas.getBoundingClientRect().top
 		}
 	}
 
@@ -122,16 +122,6 @@ const Canvas = ({ isDrawer, onNextTurn }) => {
 			>
 				Clear
 			</Button>
-
-			{/* For testing only */}
-			{
-				isDrawer && <Button
-					variant='primary'
-					onClick={onNextTurn}
-				>
-					Next Turn
-			</Button>
-			}
 		</>
 	)
 }

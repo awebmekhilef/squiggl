@@ -29,6 +29,7 @@ io.on('connection', (socket) => {
 		if (players.length < 2) {
 			io.emit('endGame')
 			gameStarted = false
+			currentPlayerIndex = 0
 		}
 
 		io.emit('player', players)
@@ -37,7 +38,6 @@ io.on('connection', (socket) => {
 			drawingCache = []
 	})
 
-	// Drawer timer run out
 	socket.on('nextTurn', () => {
 		currentPlayerIndex++
 
