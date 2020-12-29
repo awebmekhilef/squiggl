@@ -13,7 +13,7 @@ io.on('connection', (socket) => {
 		})
 
 		if (!gameStarted && players.length > 1) {
-			io.emit('nextTurn', players[currentPlayerIndex].id)
+			io.emit('nextTurn', players[currentPlayerIndex])
 			gameStarted = true
 		}
 
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 		if (currentPlayerIndex > players.length - 1)
 			currentPlayerIndex = 0
 
-		io.emit('nextTurn', players[currentPlayerIndex].id)
+		io.emit('nextTurn', players[currentPlayerIndex])
 	})
 
 	socket.on('draw', (data) => {

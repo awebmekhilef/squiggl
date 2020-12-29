@@ -18,16 +18,24 @@ const GameContainer = () => {
 	})
 
 	const [isDrawer, setIsDrawer] = useState(false)
+	const [drawerName, setDrawerName] = useState('')
+	const [isGameRunning, setIsGameRunning] = useState(false)
 
 	useEffect(() => {
 		if (socket == null) return
 
-		socket.on('nextTurn', (id) => {
-			id === socket.id ? setIsDrawer(true) : setIsDrawer(false)
+		socket.on('nextTurn', (drawer) => {
+			drawer.id === socket.id ? setIsDrawer(true) : setIsDrawer(false)
 			startTimer(10)
+
+			setDrawerName(drawer.username)
+			setIsGameRunning(true)
 		})
 
-		socket.on('endGame', () => setIsDrawer(false))
+		socket.on('endGame', () => {
+			setIsDrawer(false)
+			setIsGameRunning(false)
+		})
 	}, [socket])
 
 	const nextTurn = () => {
@@ -37,7 +45,9 @@ const GameContainer = () => {
 	return (
 		<div className='gameContainer'>
 			<Row className='mt-5'>
-				<GameHeader seconds={seconds} />
+				<GameHeader
+					seconds={seconds} isGameRunning={isGameRunning}
+					drawerName={drawerName} isDrawer={isDrawer} />
 			</Row>
 			<Row className='mt-4'>
 				<Col>
