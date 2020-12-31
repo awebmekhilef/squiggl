@@ -1,5 +1,7 @@
 const io = require('socket.io')(5000)
 
+const wordlist = require('./wordlist')
+
 let players = []
 let drawingCache = []
 let hasGameStarted = false
@@ -158,4 +160,10 @@ const emitDrawer = (username) => {
 		msg: `${username} is drawing`,
 		color: 'mediumblue'
 	})
+}
+
+// ================= GAMEPLAY =================
+
+const getRandomWord = () => {
+	return wordlist[Math.floor(Math.random() * wordlist.length)]
 }
