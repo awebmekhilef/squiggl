@@ -10,9 +10,6 @@ let counter
 
 const TURN_TIME = 10
 
-// TODO: When drawer leaves immediately move to next turn
-// TODO: Fix game counter running when game not started
-
 io.on('connection', (sckt) => {
 	sckt.on('join', (username) => onPlayerJoin(sckt, username))
 	sckt.on('disconnect', () => onPlayerLeave(sckt))
@@ -26,7 +23,13 @@ io.on('connection', (sckt) => {
 const onPlayerJoin = (socket, username) => {
 	players.push({
 		id: socket.id,
-		username
+		username 
+	})
+
+	io.emit('chat', {
+		from: 'Host',
+		msg: `${username} joined`,
+		color: 'green'
 	})
 
 	if (canStartGame())
@@ -40,15 +43,28 @@ const onPlayerJoin = (socket, username) => {
 }
 
 const onPlayerLeave = (socket) => {
+	// Get player that left
+	const player = players.find((p) => {
+		return p.id === socket.id
+	})
+
+	io.emit('chat', {
+		from: 'Host',
+		msg: `${player.username} left`,
+		color: 'firebrick'
+	})
+
 	// Remove player
 	players = players.filter((p) => {
 		return p.id !== socket.id
 	})
 
+	currDrawerIndex--
+
 	if (shouldEndGame())
 		endGame()
 	else
-		nextTurn(false)
+		nextTurn()
 
 	io.emit('player', players)
 
@@ -79,13 +95,16 @@ const onRecieveChat = (socket, msg) => {
 	})
 }
 
-// ================= GAME LOGIC =================
+// ================= GAME MANAGEMENT =================
 
 const startGame = () => {
 	hasGameStarted = true
 	currDrawerIndex = 0
 
-	io.emit('startGame', players[currDrawerIndex])
+	const player = players[currDrawerIndex]
+
+	io.emit('startGame', player)
+	emitDrawer(player.username)
 
 	startTimer()
 }
@@ -96,15 +115,17 @@ const endGame = () => {
 	io.emit('endGame')
 }
 
-const nextTurn = (increment) => {
+const nextTurn = () => {
 	clearInterval(timer)
 
-	// Do not increment when a player leaves
-	currDrawerIndex += increment ? 1 : 0
+	currDrawerIndex++
 	if (currDrawerIndex > players.length - 1)
 		currDrawerIndex = 0
 
-	io.emit('nextTurn', players[currDrawerIndex])
+	const player = players[currDrawerIndex]
+
+	io.emit('nextTurn', player)
+	emitDrawer(player.username)
 
 	startTimer()
 }
@@ -127,6 +148,14 @@ const startTimer = () => {
 
 		counter--
 		if (counter < 0)
-			nextTurn(true)
+			nextTurn()
 	}, 1000)
+}
+
+const emitDrawer = (username) => {
+	io.emit('chat', {
+		from: 'Host',
+		msg: `${username} is drawing`,
+		color: 'mediumblue'
+	})
 }
