@@ -31,18 +31,8 @@ const ChatBox = () => {
 	const handleSendMsg = (e) => {
 		e.preventDefault()
 
-		const trimMsg = msg.trim()
-
-		if (trimMsg === '') return
-
-		setChats([
-			...chats, {
-				from: 'You',
-				msg: trimMsg
-			}
-		])
-
-		socket.emit('chat', trimMsg)
+		if (msg.trim() === '') return
+		socket.emit('chat', msg.trim())
 
 		setMsg('')
 	}

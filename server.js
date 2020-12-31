@@ -21,6 +21,8 @@ io.on('connection', (sckt) => {
 	sckt.on('draw', (data) => onDraw(sckt, data))
 })
 
+// ================= CALLBACK =================
+
 const onPlayerJoin = (socket, username) => {
 	players.push({
 		id: socket.id,
@@ -29,10 +31,6 @@ const onPlayerJoin = (socket, username) => {
 
 	if (canStartGame())
 		startGame()
-
-	console.log(canStartGame());
-	console.log(players);
-	console.log(hasGameStarted);
 
 	// Send the cached drawing and current drawer
 	socket.emit('join', drawingCache)
@@ -75,11 +73,13 @@ const onRecieveChat = (socket, msg) => {
 		return p.id === socket.id
 	})
 
-	socket.broadcast.emit('chat', {
+	io.emit('chat', {
 		from: sender.username,
 		msg
 	})
 }
+
+// ================= GAME LOGIC =================
 
 const startGame = () => {
 	hasGameStarted = true
