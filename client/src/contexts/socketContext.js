@@ -12,7 +12,9 @@ export function SocketProvider({ children }) {
 	const [socket, setSocket] = useState()
 
 	useEffect(() => {
-		const newSocket = io()
+		const newSocket = io({
+			reconnection: false
+	})
 		setSocket(newSocket)
 
 		return () => newSocket.close()

@@ -6,7 +6,7 @@ function getFormattedTime(t) {
 
 const TimerDisplay = ({ seconds }) => {
 	return (
-		<h5>Time left: {getFormattedTime(seconds)}</h5>
+		<h5 className='text-monospace'>Time left: {getFormattedTime(seconds)}</h5>
 	)
 }
 

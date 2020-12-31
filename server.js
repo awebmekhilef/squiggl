@@ -15,7 +15,7 @@ const TURN_TIME = 10
 io.on('connection', (sckt) => {
 	sckt.on('join', (username) => onPlayerJoin(sckt, username))
 	sckt.on('disconnect', () => onPlayerLeave(sckt))
-	sckt.on('clear', () => onCanvasClear())
+	sckt.on('clear', () => clearCanvas())
 	sckt.on('chat', (msg) => onRecieveChat(sckt, msg))
 	sckt.on('draw', (data) => onDraw(sckt, data))
 })
@@ -25,7 +25,7 @@ io.on('connection', (sckt) => {
 const onPlayerJoin = (socket, username) => {
 	players.push({
 		id: socket.id,
-		username 
+		username
 	})
 
 	io.emit('chat', {
@@ -80,9 +80,9 @@ const onDraw = (socket, data) => {
 	drawingCache.push(data)
 }
 
-const onCanvasClear = () => {
-	io.emit('clear')
+const clearCanvas = () => {
 	drawingCache = []
+	io.emit('clear')
 }
 
 const onRecieveChat = (socket, msg) => {
@@ -103,9 +103,14 @@ const startGame = () => {
 	hasGameStarted = true
 	currDrawerIndex = 0
 
+	clearCanvas()
+
 	const player = players[currDrawerIndex]
 
-	io.emit('startGame', player)
+	io.emit('startGame', {
+		id: player.id,
+		word: getRandomWord()
+	})
 	emitDrawer(player.username)
 
 	startTimer()
@@ -114,6 +119,8 @@ const startGame = () => {
 const endGame = () => {
 	hasGameStarted = false
 	clearInterval(timer)
+
+	clearCanvas()
 	io.emit('endGame')
 }
 
@@ -124,9 +131,14 @@ const nextTurn = () => {
 	if (currDrawerIndex > players.length - 1)
 		currDrawerIndex = 0
 
+	clearCanvas()
+
 	const player = players[currDrawerIndex]
 
-	io.emit('nextTurn', player)
+	io.emit('nextTurn', {
+		id: player.id,
+		word: getRandomWord()
+	})
 	emitDrawer(player.username)
 
 	startTimer()
@@ -157,7 +169,7 @@ const startTimer = () => {
 const emitDrawer = (username) => {
 	io.emit('chat', {
 		from: 'Host',
-		msg: `${username} is drawing`,
+		msg: `${username} is now drawing`,
 		color: 'mediumblue'
 	})
 }

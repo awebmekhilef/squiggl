@@ -14,7 +14,7 @@ const GameContainer = () => {
 	const socket = useSocket()
 
 	const [isDrawer, setIsDrawer] = useState(false)
-	const [drawer, setDrawer] = useState(null)
+	const [word, setWord] = useState('')
 	const [timer, setTimer] = useState(0)
 
 	useEffect(() => {
@@ -26,15 +26,15 @@ const GameContainer = () => {
 		socket.on('endGame', handleEndGame)
 	}, [socket])
 
-	const handleTurn = (drawer) => {
-		drawer.id === socket.id ? setIsDrawer(true) : setIsDrawer(false)
-		setDrawer(drawer)
+	const handleTurn = ({id, word}) => {
+		id === socket.id ? setIsDrawer(true) : setIsDrawer(false)
+		setWord(word)
 	}
 
 	const handleEndGame = () => {
 		setIsDrawer(false)
-		setDrawer(null)
 		setTimer(0)
+		setWord('')
 	}
 
 	return (
@@ -43,7 +43,7 @@ const GameContainer = () => {
 				<GameHeader
 					seconds={timer}
 					isDrawer={isDrawer}
-					drawer={drawer} />
+					word={word} />
 			</Row>
 			<Row className='mt-4'>
 				<Col>
