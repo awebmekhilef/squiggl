@@ -63,7 +63,7 @@ const onPlayerLeave = (socket) => {
 
 	currDrawerIndex--
 
-	if (shouldEndGame())
+	if (players.length === 0 || shouldEndGame())
 		endGame()
 	else
 		nextTurn()
