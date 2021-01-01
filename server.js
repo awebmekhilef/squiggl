@@ -3,14 +3,16 @@ const io = require('socket.io')(5000)
 const wordlist = require('./wordlist')
 
 let players = []
+let playersGuessed = 0
 let drawingCache = []
 let hasGameStarted = false
 let currDrawerIndex = 0
+let word = ''
 
 let timer
 let counter
 
-const TURN_TIME = 10
+const TURN_TIME = 60
 
 io.on('connection', (sckt) => {
 	sckt.on('join', (username) => onPlayerJoin(sckt, username))
@@ -91,6 +93,22 @@ const onRecieveChat = (socket, msg) => {
 		return p.id === socket.id
 	})
 
+	// Player correctly guessed word
+	if (hasGameStarted && msg === word) {
+		io.emit('chat', {
+			from: 'Host',
+			msg: `${sender.username} guessed the word!`,
+			color: 'lime'
+		})
+
+		socket.emit('correctGuess')
+		if (++playersGuessed >= players.length - 1) {
+			nextTurn()
+		}
+
+		return
+	}
+
 	io.emit('chat', {
 		from: sender.username,
 		msg
@@ -106,10 +124,11 @@ const startGame = () => {
 	clearCanvas()
 
 	const player = players[currDrawerIndex]
+	word = getRandomWord()
 
 	io.emit('startGame', {
 		id: player.id,
-		word: getRandomWord()
+		word
 	})
 	emitDrawer(player.username)
 
@@ -134,10 +153,11 @@ const nextTurn = () => {
 	clearCanvas()
 
 	const player = players[currDrawerIndex]
+	word = getRandomWord()
 
 	io.emit('nextTurn', {
 		id: player.id,
-		word: getRandomWord()
+		word
 	})
 	emitDrawer(player.username)
 

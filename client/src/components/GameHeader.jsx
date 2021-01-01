@@ -2,7 +2,7 @@ import React from 'react'
 
 import TimerDisplay from './TimerDisplay'
 
-const GameHeader = ({ seconds, isDrawer, word }) => {
+const GameHeader = ({ seconds, isDrawer, word, hasGuessedWord }) => {
 	return (
 		<div className='d-flex justify-content-around bg-light w-100 pt-3 pb-2'>
 			<TimerDisplay seconds={seconds} />
@@ -15,9 +15,11 @@ const GameHeader = ({ seconds, isDrawer, word }) => {
 							<h5 className='text-monospace'>Your word is {word}</h5> :
 							<h5 className='text-monospace'>
 								{
-									word.split('').map(() => (
-										`_ `
-									))
+									hasGuessedWord ?
+										`You have guessed the word!` :
+										word.split('').map(() => (
+											`_ `
+										))
 								}
 							</h5>
 					)

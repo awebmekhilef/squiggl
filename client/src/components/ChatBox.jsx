@@ -5,7 +5,7 @@ import { useSocket } from '../contexts/socketContext'
 import Form from 'react-bootstrap/Form'
 import ListGroup from 'react-bootstrap/ListGroup'
 
-const ChatBox = () => {
+const ChatBox = ({isDrawer}) => {
 	const socket = useSocket()
 	const bottomRef = useRef()
 
@@ -65,6 +65,7 @@ const ChatBox = () => {
 
 			<Form onSubmit={handleSendMsg}>
 				<Form.Control
+					disabled={isDrawer}
 					value={msg} onChange={(e) => setMsg(e.target.value)}
 					placeholder='Send a message..' />
 			</Form>

@@ -2,6 +2,17 @@ module.exports = [
 	'car',
 	'hat',
 	'ship',
+	'apple',
+	'squid',
+	'castle',
+	'hammer',
+	'tennis',
+	'hotdog',
+	'waffle',
+	'spider',
+	'octopus',
+	'penguin',
 	'computer',
-	'binoculars'
+	'ambulance',
+	'furniture',
 ]
