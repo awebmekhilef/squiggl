@@ -40,7 +40,7 @@ const onPlayerJoin = (socket, username) => {
 		startGame()
 
 	// Send the cached drawing and current drawer
-	socket.emit('join', drawingCache)
+	socket.emit('join', { drawingCache, word })
 
 	// Update player list
 	io.emit('player', players)
@@ -102,7 +102,15 @@ const onRecieveChat = (socket, msg) => {
 		})
 
 		socket.emit('correctGuess')
+
+		// All players have guessed correctly
 		if (++playersGuessed >= players.length - 1) {
+			io.emit('chat', {
+				from: 'Host',
+				msg: `The word was ${word}`,
+				color: 'saddlebrown'
+			})
+
 			nextTurn()
 		}
 
@@ -136,8 +144,10 @@ const startGame = () => {
 }
 
 const endGame = () => {
-	hasGameStarted = false
 	clearInterval(timer)
+
+	hasGameStarted = false
+	word = ''
 
 	clearCanvas()
 	io.emit('endGame')
@@ -145,6 +155,7 @@ const endGame = () => {
 
 const nextTurn = () => {
 	clearInterval(timer)
+	playersGuessed = 0
 
 	currDrawerIndex++
 	if (currDrawerIndex > players.length - 1)

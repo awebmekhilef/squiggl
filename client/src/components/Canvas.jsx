@@ -18,7 +18,7 @@ const Canvas = ({ isDrawer }) => {
 	useEffect(() => {
 		if (socket == null) return
 
-		socket.on('join', (drawingCache) => {
+		socket.on('join', ({ drawingCache }) => {
 			drawingCache.forEach((d) => drawLine(d.x0, d.y0, d.x1, d.y1, false))
 		})
 

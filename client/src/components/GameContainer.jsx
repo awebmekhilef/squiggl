@@ -23,10 +23,15 @@ const GameContainer = () => {
 
 		socket.on('startGame', handleTurn)
 		socket.on('nextTurn', handleTurn)
+		socket.on('join', handleJoin)
 		socket.on('tick', setTimer)
 		socket.on('correctGuess', handleCorrectGuess)
 		socket.on('endGame', handleEndGame)
 	}, [socket])
+
+	const handleJoin = ({ word }) => {
+		setWord(word)
+	}
 
 	const handleTurn = ({id, word}) => {
 		id === socket.id ? setIsDrawer(true) : setIsDrawer(false)
