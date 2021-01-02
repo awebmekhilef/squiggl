@@ -10,7 +10,7 @@ const PlayerList = () => {
 	const [players, setPlayers] = useState([])
 
 	useEffect(() => {
-		if(socket == null) return
+		if (socket == null) return
 
 		socket.on('player', (newPlayers) => {
 			setPlayers(newPlayers)
@@ -21,12 +21,16 @@ const PlayerList = () => {
 		<ListGroup>
 			{
 				players.map((p) => (
-					<ListGroup.Item key={p.id}>
+					<ListGroup.Item
+						key={p.id}
+						className='d-flex justify-content-between'>
 						{
 							socket.id === p.id ?
-								<b>{p.username} (You)</b>:
-								`${p.username}`
+								<b>{p.username} (You)</b> :
+								<span>{p.username}</span>
 						}
+
+						<span>{p.score}</span>
 					</ListGroup.Item>
 				))
 			}

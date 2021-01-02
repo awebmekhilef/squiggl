@@ -2,6 +2,7 @@ const io = require('socket.io')(5000)
 
 const wordlist = require('./wordlist')
 
+// {id, username, score}
 let players = []
 let playersGuessed = 0
 let drawingCache = []
@@ -27,7 +28,8 @@ io.on('connection', (sckt) => {
 const onPlayerJoin = (socket, username) => {
 	players.push({
 		id: socket.id,
-		username
+		username,
+		score: 0
 	})
 
 	io.emit('chat', {
@@ -95,6 +97,9 @@ const onRecieveChat = (socket, msg) => {
 
 	// Player correctly guessed word
 	if (hasGameStarted && msg === word) {
+		addScore(socket.id, 50)
+
+		io.emit('player', players)
 		io.emit('chat', {
 			from: 'Host',
 			msg: `${sender.username} guessed the word!`,
@@ -146,6 +151,11 @@ const startGame = () => {
 const endGame = () => {
 	clearInterval(timer)
 
+	// Reset scores
+	players = players.map(p => ({
+		...p,
+		score: 0
+	}))
 	hasGameStarted = false
 	word = ''
 
@@ -166,6 +176,7 @@ const nextTurn = () => {
 	const player = players[currDrawerIndex]
 	word = getRandomWord()
 
+	// Just to keep things in sync
 	io.emit('nextTurn', {
 		id: player.id,
 		word
@@ -187,13 +198,17 @@ const shouldEndGame = () => {
 
 const startTimer = () => {
 	counter = TURN_TIME
+	io.emit('tick', counter)
 
 	timer = setInterval(() => {
-		io.emit('tick', counter)
-
 		counter--
-		if (counter < 0)
+
+		if (counter < 0) {
 			nextTurn()
+			return
+		}
+
+		io.emit('tick', counter)
 	}, 1000)
 }
 
@@ -209,4 +224,11 @@ const emitDrawer = (username) => {
 
 const getRandomWord = () => {
 	return wordlist[Math.floor(Math.random() * wordlist.length)]
+}
+
+const addScore = (id, amount) => {
+	for (let i = 0; i < players.length; i++) {
+		if (players[i].id === id)
+			players[i].score += amount
+	}
 }
