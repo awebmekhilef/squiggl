@@ -15,7 +15,7 @@ let timer
 let counter
 
 const TURN_TIME = 60
-const MAX_ROUNDS = 2
+const MAX_ROUNDS = 1
 
 io.on('connection', (sckt) => {
 	sckt.on('join', (username) => onPlayerJoin(sckt, username))
@@ -69,8 +69,8 @@ const onPlayerLeave = (socket) => {
 
 	currDrawerIndex--
 
-	if (players.length === 0 || shouldEndGame())
-		prematureEndGame()
+	if (shouldresetGame())
+		resetGame()
 	else
 		nextTurn()
 
@@ -142,6 +142,7 @@ const startGame = () => {
 	const player = players[currDrawerIndex]
 	word = getRandomWord()
 
+	io.emit('player', players)
 	io.emit('startGame', {
 		id: player.id,
 		word
@@ -152,7 +153,7 @@ const startGame = () => {
 }
 
 // When not enough players
-const prematureEndGame = () => {
+const resetGame = () => {
 	clearInterval(timer)
 
 	// Reset scores
@@ -160,17 +161,25 @@ const prematureEndGame = () => {
 		...p,
 		score: 0
 	}))
+
 	hasGameStarted = false
 	word = ''
+	round = 0
 
 	clearCanvas()
-	io.emit('endGame')
+	io.emit('resetGame')
 }
 
 // Got through all rounds
 const finishGame = () => {
-	players = [...players].sort((p1, p2) => p1.score < p2.score ? 1 : -1)
-	console.log(players);
+	const playerLeaderboard = [...players].sort((p1, p2) => p1.score < p2.score ? 1 : -1)
+	io.emit('leaderboard', playerLeaderboard)
+
+	resetGame()
+
+	setTimeout(() => {
+		canStartGame() && startGame()
+	}, 10 * 1000) // 10 seconds
 }
 
 const nextTurn = () => {
@@ -180,7 +189,9 @@ const nextTurn = () => {
 	currDrawerIndex++
 	if (currDrawerIndex > players.length - 1) {
 		currDrawerIndex = 0
-		nextRound()
+
+		if (!nextRound())
+			return
 	}
 
 	clearCanvas()
@@ -202,10 +213,11 @@ const nextRound = () => {
 	// Game finished
 	if (++round > MAX_ROUNDS) {
 		finishGame()
-		return
+		return false
 	}
-
+	
 	io.emit('nextRound')
+	return true
 }
 
 const canStartGame = () => {
@@ -213,9 +225,8 @@ const canStartGame = () => {
 		!hasGameStarted
 }
 
-const shouldEndGame = () => {
-	return players.length < 2 &&
-		hasGameStarted
+const shouldresetGame = () => {
+	return players.length < 2
 }
 
 const startTimer = () => {

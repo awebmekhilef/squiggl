@@ -9,6 +9,9 @@ import GameHeader from './GameHeader'
 import Canvas from './Canvas'
 import PlayerList from './PlayerList'
 import ChatBox from './ChatBox'
+import Leaderboard from './Leaderboard'
+
+// FIXME: FOR SOME ODD ASS FUCKING REASON MODAL DOESN'T APPEAR WHEN A GAME IS FINISHED
 
 const GameContainer = () => {
 	const socket = useSocket()
@@ -18,6 +21,8 @@ const GameContainer = () => {
 	const [word, setWord] = useState('')
 	const [timer, setTimer] = useState(0)
 	const [round, setRound] = useState(0)
+	const [leaderboard, setLeaderboard] = useState([])
+	const [showLeaderboard, setShowLeaderboard] = useState(false)
 
 	useEffect(() => {
 		if (socket == null) return
@@ -28,7 +33,8 @@ const GameContainer = () => {
 		socket.on('join', handleJoin)
 		socket.on('tick', setTimer)
 		socket.on('correctGuess', handleCorrectGuess)
-		socket.on('endGame', handleEndGame)
+		socket.on('resetGame', handleResetGame)
+		socket.on('leaderboard', handleLeaderboard)
 	}, [socket])
 
 	const handleJoin = ({ word, round }) => {
@@ -38,6 +44,7 @@ const GameContainer = () => {
 
 	const handleTurn = ({ id, word }) => {
 		id === socket.id ? setIsDrawer(true) : setIsDrawer(false)
+		setShowLeaderboard(false)
 		setHasGuessedWord(false)
 		setWord(word)
 	}
@@ -50,7 +57,7 @@ const GameContainer = () => {
 		setHasGuessedWord(true)
 	}
 
-	const handleEndGame = () => {
+	const handleResetGame = () => {
 		setHasGuessedWord(false)
 		setIsDrawer(false)
 		setTimer(0)
@@ -58,8 +65,18 @@ const GameContainer = () => {
 		setWord('')
 	}
 
+	const handleLeaderboard = (leaderboard) => {
+		setLeaderboard(leaderboard)
+		setShowLeaderboard(true)
+	}
+
 	return (
 		<div className='gameContainer'>
+			<Leaderboard
+				id={socket?.id}
+				players={leaderboard}
+				show={showLeaderboard} />
+
 			<Row className='mt-5'>
 				<GameHeader
 					hasGuessedWord={hasGuessedWord}
