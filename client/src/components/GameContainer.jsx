@@ -17,26 +17,33 @@ const GameContainer = () => {
 	const [hasGuessedWord, setHasGuessedWord] = useState(false)
 	const [word, setWord] = useState('')
 	const [timer, setTimer] = useState(0)
+	const [round, setRound] = useState(0)
 
 	useEffect(() => {
 		if (socket == null) return
 
 		socket.on('startGame', handleTurn)
 		socket.on('nextTurn', handleTurn)
+		socket.on('nextRound', handleNextRound)
 		socket.on('join', handleJoin)
 		socket.on('tick', setTimer)
 		socket.on('correctGuess', handleCorrectGuess)
 		socket.on('endGame', handleEndGame)
 	}, [socket])
 
-	const handleJoin = ({ word }) => {
+	const handleJoin = ({ word, round }) => {
+		setRound(round)
 		setWord(word)
 	}
 
-	const handleTurn = ({id, word}) => {
+	const handleTurn = ({ id, word }) => {
 		id === socket.id ? setIsDrawer(true) : setIsDrawer(false)
-		setWord(word)
 		setHasGuessedWord(false)
+		setWord(word)
+	}
+
+	const handleNextRound = () => {
+		setRound((prevRound) => ++prevRound)
 	}
 
 	const handleCorrectGuess = () => {
@@ -44,10 +51,11 @@ const GameContainer = () => {
 	}
 
 	const handleEndGame = () => {
+		setHasGuessedWord(false)
 		setIsDrawer(false)
 		setTimer(0)
+		setRound(0)
 		setWord('')
-		setHasGuessedWord(false)
 	}
 
 	return (
@@ -55,8 +63,9 @@ const GameContainer = () => {
 			<Row className='mt-5'>
 				<GameHeader
 					hasGuessedWord={hasGuessedWord}
-					seconds={timer}
 					isDrawer={isDrawer}
+					seconds={timer}
+					round={round}
 					word={word} />
 			</Row>
 			<Row className='mt-4'>

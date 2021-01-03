@@ -8,12 +8,14 @@ let playersGuessed = 0
 let drawingCache = []
 let hasGameStarted = false
 let currDrawerIndex = 0
+let round = 0
 let word = ''
 
 let timer
 let counter
 
 const TURN_TIME = 60
+const MAX_ROUNDS = 2
 
 io.on('connection', (sckt) => {
 	sckt.on('join', (username) => onPlayerJoin(sckt, username))
@@ -42,7 +44,7 @@ const onPlayerJoin = (socket, username) => {
 		startGame()
 
 	// Send the cached drawing and current drawer
-	socket.emit('join', { drawingCache, word })
+	socket.emit('join', { drawingCache, word, round })
 
 	// Update player list
 	io.emit('player', players)
@@ -68,7 +70,7 @@ const onPlayerLeave = (socket) => {
 	currDrawerIndex--
 
 	if (players.length === 0 || shouldEndGame())
-		endGame()
+		prematureEndGame()
 	else
 		nextTurn()
 
@@ -135,6 +137,7 @@ const startGame = () => {
 	currDrawerIndex = 0
 
 	clearCanvas()
+	nextRound()
 
 	const player = players[currDrawerIndex]
 	word = getRandomWord()
@@ -148,7 +151,8 @@ const startGame = () => {
 	startTimer()
 }
 
-const endGame = () => {
+// When not enough players
+const prematureEndGame = () => {
 	clearInterval(timer)
 
 	// Reset scores
@@ -163,13 +167,21 @@ const endGame = () => {
 	io.emit('endGame')
 }
 
+// Got through all rounds
+const finishGame = () => {
+	players = [...players].sort((p1, p2) => p1.score < p2.score ? 1 : -1)
+	console.log(players);
+}
+
 const nextTurn = () => {
 	clearInterval(timer)
 	playersGuessed = 0
 
 	currDrawerIndex++
-	if (currDrawerIndex > players.length - 1)
+	if (currDrawerIndex > players.length - 1) {
 		currDrawerIndex = 0
+		nextRound()
+	}
 
 	clearCanvas()
 
@@ -184,6 +196,16 @@ const nextTurn = () => {
 	emitDrawer(player.username)
 
 	startTimer()
+}
+
+const nextRound = () => {
+	// Game finished
+	if (++round > MAX_ROUNDS) {
+		finishGame()
+		return
+	}
+
+	io.emit('nextRound')
 }
 
 const canStartGame = () => {
