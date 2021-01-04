@@ -132,16 +132,8 @@ const onRecieveChat = (socket, msg) => {
 		socket.emit('correctGuess')
 		playersGuessed.push(sender.id)
 
-		// All players have guessed correctly
-		if (playersGuessed.length >= players.length) {
-			io.emit('chat', {
-				from: 'Host',
-				msg: `The word was ${word}`,
-				color: 'saddlebrown'
-			})
-
+		if (playersGuessed.length >= players.length - 1)
 			nextTurn()
-		}
 
 		return
 	}
@@ -212,11 +204,13 @@ const nextTurn = () => {
 		Math.min(MAX_DRAWER_SCORE, playersGuessed.length * SCORE_INCREMENT))
 	io.emit('player', players)
 
-	io.emit('chat', {
-		from: 'Host',
-		msg: `The word was ${word}`,
-		color: 'saddlebrown'
-	})
+	if (word !== '') {
+		io.emit('chat', {
+			from: 'Host',
+			msg: `The word was ${word}`,
+			color: 'saddlebrown'
+		})
+	}
 
 	playersGuessed = []
 
