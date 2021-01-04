@@ -11,8 +11,6 @@ import PlayerList from './PlayerList'
 import ChatBox from './ChatBox'
 import Leaderboard from './Leaderboard'
 
-// FIXME: FOR SOME ODD ASS FUCKING REASON MODAL DOESN'T APPEAR WHEN A GAME IS FINISHED
-
 const GameContainer = () => {
 	const socket = useSocket()
 
@@ -73,7 +71,6 @@ const GameContainer = () => {
 	return (
 		<div className='gameContainer'>
 			<Leaderboard
-				id={socket?.id}
 				players={leaderboard}
 				show={showLeaderboard} />
 

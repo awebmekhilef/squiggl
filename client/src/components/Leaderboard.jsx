@@ -3,7 +3,9 @@ import React from 'react'
 import Modal from 'react-bootstrap/Modal'
 import ListGroup from 'react-bootstrap/ListGroup'
 
-const Leaderboard = ({ id, players, show }) => {
+import LeaderboardItem from './LeaderboardItem'
+
+const Leaderboard = ({ players, show }) => {
 	return (
 		<Modal
 			centered
@@ -18,18 +20,12 @@ const Leaderboard = ({ id, players, show }) => {
 			<Modal.Body>
 				<ListGroup>
 					{
-						players.map((p) => (
-							<ListGroup.Item
+						players.map((p, i) => (
+							<LeaderboardItem
 								key={p.id}
-								className='d-flex justify-content-between'>
-								{
-									id === p.id ?
-										<b>{p.username} (You)</b> :
-										<span>{p.username}</span>
-								}
-
-								<span>{p.score}</span>
-							</ListGroup.Item>
+								index={i + 1}
+								username={p.username}
+								score={p.score} />
 						))
 					}
 				</ListGroup>
@@ -37,7 +33,7 @@ const Leaderboard = ({ id, players, show }) => {
 
 			<Modal.Footer>
 				<span className='text-muted'>Restarting game in a while...</span>
-  		</Modal.Footer>
+			</Modal.Footer>
 		</Modal>
 	)
 }
