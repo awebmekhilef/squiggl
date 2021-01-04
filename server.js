@@ -114,7 +114,7 @@ const onRecieveChat = (socket, msg) => {
 	})
 
 	// Player correctly guessed word
-	if (hasGameStarted && msg.toLowerCase() === word) {
+	if (hasGameStarted && msg.toLowerCase() === word.toLowerCase()) {
 		// Player already guessed
 		if (playersGuessed.indexOf(socket.id) !== -1)
 			return
