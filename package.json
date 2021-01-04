@@ -8,11 +8,14 @@
     "nodemon": "^2.0.6"
   },
   "scripts": {
+		"start": "node server.js",
     "devClient": "yarn --cwd client start",
     "devServer": "nodemon server.js",
-    "dev": "concurrently \"yarn devServer\" \"yarn devClient\""
+		"dev": "concurrently \"yarn devServer\" \"yarn devClient\"",
+		"heroku-postbuild": "cd client && yarn && yarn run build"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "socket.io": "^3.0.4"
   }
 }
