@@ -26,7 +26,7 @@ let word = ''
 let timer
 let counter
 
-const TURN_TIME = 60
+const TURN_TIME = 75
 const MAX_ROUNDS = 3
 const BASE_GUESSER_SCORE = 300
 const MIN_GUESSER_SCORE = 50
@@ -133,7 +133,7 @@ const onRecieveChat = (socket, msg) => {
 		playersGuessed.push(sender.id)
 
 		// All players have guessed correctly
-		if (playersGuessed.length >= players.length - 1) {
+		if (playersGuessed.length >= players.length) {
 			io.emit('chat', {
 				from: 'Host',
 				msg: `The word was ${word}`,
@@ -211,6 +211,12 @@ const nextTurn = () => {
 	addScore(players[currDrawerIndex].id,
 		Math.min(MAX_DRAWER_SCORE, playersGuessed.length * SCORE_INCREMENT))
 	io.emit('player', players)
+
+	io.emit('chat', {
+		from: 'Host',
+		msg: `The word was ${word}`,
+		color: 'saddlebrown'
+	})
 
 	playersGuessed = []
 
