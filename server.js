@@ -11,7 +11,7 @@ server.listen(process.env.PORT || 5000)
 
 app.use(express.static(path.join(__dirname, 'client/build')))
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/build/index.html'))
+	res.sendFile(path.join(__dirname + '/client/build/index.html'))
 })
 
 // {id, username, score}
@@ -288,7 +288,7 @@ const getRandomWord = () => {
 }
 
 const addScore = (id, amount) => {
-	for (let i = 0 i < players.length i++) {
+	for (let i = 0; i < players.length; i++) {
 		if (players[i].id === id)
 			players[i].score += amount
 	}
