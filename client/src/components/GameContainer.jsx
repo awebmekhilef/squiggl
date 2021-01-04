@@ -90,7 +90,7 @@ const GameContainer = () => {
 					<Canvas isDrawer={isDrawer} />
 				</Col>
 				<Col>
-					<ChatBox isDrawer={isDrawer} />
+					<ChatBox isDrawer={isDrawer} hasGuessedWord={hasGuessedWord} />
 				</Col>
 			</Row>
 		</div>

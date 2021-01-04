@@ -4,7 +4,7 @@ const wordlist = require('./wordlist')
 
 // {id, username, score}
 let players = []
-let playersGuessed = 0
+let playersGuessed = []
 let drawingCache = []
 let hasGameStarted = false
 let currDrawerIndex = 0
@@ -16,6 +16,10 @@ let counter
 
 const TURN_TIME = 60
 const MAX_ROUNDS = 1
+const BASE_GUESSER_SCORE = 300
+const MIN_GUESSER_SCORE = 50
+const MAX_DRAWER_SCORE = 200
+const SCORE_INCREMENT = 50
 
 io.on('connection', (sckt) => {
 	sckt.on('join', (username) => onPlayerJoin(sckt, username))
@@ -62,12 +66,12 @@ const onPlayerLeave = (socket) => {
 		color: 'firebrick'
 	})
 
+	currDrawerIndex--
+
 	// Remove player
 	players = players.filter((p) => {
 		return p.id !== socket.id
 	})
-
-	currDrawerIndex--
 
 	if (shouldresetGame())
 		resetGame()
@@ -99,7 +103,12 @@ const onRecieveChat = (socket, msg) => {
 
 	// Player correctly guessed word
 	if (hasGameStarted && msg === word) {
-		addScore(socket.id, 50)
+		// Player already guessed
+		if (playersGuessed.indexOf(socket.id) !== -1)
+			return
+
+		addScore(socket.id,
+			Math.max(MIN_GUESSER_SCORE, BASE_GUESSER_SCORE - playersGuessed.length * SCORE_INCREMENT))
 
 		io.emit('player', players)
 		io.emit('chat', {
@@ -109,9 +118,10 @@ const onRecieveChat = (socket, msg) => {
 		})
 
 		socket.emit('correctGuess')
+		playersGuessed.push(sender.id)
 
 		// All players have guessed correctly
-		if (++playersGuessed >= players.length - 1) {
+		if (playersGuessed.length >= players.length - 1) {
 			io.emit('chat', {
 				from: 'Host',
 				msg: `The word was ${word}`,
@@ -184,7 +194,13 @@ const finishGame = () => {
 
 const nextTurn = () => {
 	clearInterval(timer)
-	playersGuessed = 0
+
+	// Give drawer points
+	addScore(players[currDrawerIndex].id,
+		Math.min(MAX_DRAWER_SCORE, playersGuessed.length * SCORE_INCREMENT))
+	io.emit('player', players)
+
+	playersGuessed = []
 
 	currDrawerIndex++
 	if (currDrawerIndex > players.length - 1) {
@@ -215,7 +231,7 @@ const nextRound = () => {
 		finishGame()
 		return false
 	}
-	
+
 	io.emit('nextRound')
 	return true
 }
