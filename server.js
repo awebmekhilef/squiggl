@@ -27,7 +27,7 @@ let timer
 let counter
 
 const TURN_TIME = 60
-const MAX_ROUNDS = 1
+const MAX_ROUNDS = 3
 const BASE_GUESSER_SCORE = 300
 const MIN_GUESSER_SCORE = 50
 const MAX_DRAWER_SCORE = 200
@@ -114,7 +114,7 @@ const onRecieveChat = (socket, msg) => {
 	})
 
 	// Player correctly guessed word
-	if (hasGameStarted && msg === word) {
+	if (hasGameStarted && msg.toLowerCase() === word) {
 		// Player already guessed
 		if (playersGuessed.indexOf(socket.id) !== -1)
 			return
